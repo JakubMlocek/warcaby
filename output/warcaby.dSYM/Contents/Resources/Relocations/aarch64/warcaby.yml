@@ -2,9 +2,9 @@
 triple:          'arm64-apple-darwin'
 binary-path:     '/Users/jakmlo/Desktop/studia/sem6/prog_sieciowe/Projekt/output/warcaby'
 relocations:
-  - { offsetInCU: 0x26, offset: 0x26, size: 0x8, addend: 0x0, symName: _inicjalizujPlansze, symObjAddr: 0x0, symBinAddr: 0x10000389C, symSize: 0x14C }
-  - { offsetInCU: 0x41, offset: 0x41, size: 0x8, addend: 0x0, symName: _inicjalizujPlansze, symObjAddr: 0x0, symBinAddr: 0x10000389C, symSize: 0x14C }
-  - { offsetInCU: 0x9D, offset: 0x9D, size: 0x8, addend: 0x0, symName: _wyswietlPlansze, symObjAddr: 0x14C, symBinAddr: 0x1000039E8, symSize: 0x13C }
-  - { offsetInCU: 0x115, offset: 0x115, size: 0x8, addend: 0x0, symName: _wykonajRuch, symObjAddr: 0x288, symBinAddr: 0x100003B24, symSize: 0x2A0 }
-  - { offsetInCU: 0x19B, offset: 0x19B, size: 0x8, addend: 0x0, symName: _main, symObjAddr: 0x528, symBinAddr: 0x100003DC4, symSize: 0x108 }
+  - { offsetInCU: 0x26, offset: 0x26, size: 0x8, addend: 0x0, symName: _inicjalizujPlansze, symObjAddr: 0x0, symBinAddr: 0x1000036FC, symSize: 0x14C }
+  - { offsetInCU: 0x41, offset: 0x41, size: 0x8, addend: 0x0, symName: _inicjalizujPlansze, symObjAddr: 0x0, symBinAddr: 0x1000036FC, symSize: 0x14C }
+  - { offsetInCU: 0x9D, offset: 0x9D, size: 0x8, addend: 0x0, symName: _wyswietlPlansze, symObjAddr: 0x14C, symBinAddr: 0x100003848, symSize: 0x1E4 }
+  - { offsetInCU: 0x14D, offset: 0x14D, size: 0x8, addend: 0x0, symName: _wykonajRuch, symObjAddr: 0x330, symBinAddr: 0x100003A2C, symSize: 0x330 }
+  - { offsetInCU: 0x1D3, offset: 0x1D3, size: 0x8, addend: 0x0, symName: _main, symObjAddr: 0x660, symBinAddr: 0x100003D5C, symSize: 0x12C }
 ...
