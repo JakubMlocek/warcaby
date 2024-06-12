@@ -18,7 +18,7 @@ int main() {
     char buffer[BUFFER_SIZE];
     int bytes_read;
 
-    signal(SIGINT, signal_handler);
+    
 
     // Create client socket
     sockfd = socket(AF_INET, SOCK_STREAM, 0);
@@ -48,7 +48,7 @@ int main() {
     // Main game loop
     
 	while (1) {
-        
+        signal(SIGINT, signal_handler);
         if ((bytes_read = read(sockfd, buffer, BUFFER_SIZE)) < 0) {
             perror("Reading from socket failed");
             exit(EXIT_FAILURE);
