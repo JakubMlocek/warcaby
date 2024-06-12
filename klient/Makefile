@@ -5,7 +5,7 @@ CC = gcc
 CFLAGS = -Wall -pthread
 
 # Executable name
-TARGET = compiled/server
+TARGET = compiled/client
 
 # Source and header files
 SRCDIR = src
