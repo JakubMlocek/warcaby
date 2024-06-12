@@ -14,8 +14,7 @@
 int main() {
     int sockfd;
     struct sockaddr_in server_addr;
-    char buffer[BUFFER_SIZE];
-    int bytes_read;
+    char buffer[BUFFER_SIZE] = {0};
 
     // Create client socket
     sockfd = socket(AF_INET, SOCK_STREAM, 0);
@@ -44,12 +43,16 @@ int main() {
 
     // Main game loop
     
-	while (1) {
+    char board[BOARD_SIZE][BOARD_SIZE];
 
-		
+    // Receive the game board buffer from the server
+    if (recv(sockfd, buffer, sizeof(buffer), 0) < 0) {
+        perror("recv failed");
+        exit(EXIT_FAILURE);
+    }
 
-	}
-
+    set_board_to_buffer(board, buffer);
+    print_board(board);
 
     close(sockfd);
     return 0;
