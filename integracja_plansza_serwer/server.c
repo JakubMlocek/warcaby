@@ -105,6 +105,6 @@ int main() {
     //}
 
     close(server_fd);
-    pthread_mutex_destroy(&game_lock);
+    // pthread_mutex_destroy(&game_lock);
     return 0;
 }

@@ -6,6 +6,12 @@
 #include <arpa/inet.h>
 #include <pthread.h>
 #include <time.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <netdb.h>
+#include <syslog.h>
+#include <string.h>
 
 #define PORT 12345
 #define MAX_CLIENTS 2
@@ -26,15 +32,49 @@ game_state_t game_state;
 int clients[MAX_CLIENTS];
 int client_count = 0;
 
-void initialize_board() {
-    memset(game_state.board, ' ', sizeof(game_state.board));
-    // Initial placement of pieces
-    for (int i = 0; i < 3; i++) {
-        for (int j = (i % 2 == 0 ? 1 : 0); j < 8; j += 2) {
-            game_state.board[i][j] = 'b'; // Black pieces
-            game_state.board[7 - i][7 - j] = 'w'; // White pieces
-        }
+// void initialize_board() {
+//     memset(game_state.board, ' ', sizeof(game_state.board));
+//     // Initial placement of pieces
+//     for (int i = 0; i < 3; i++) {
+//         for (int j = (i % 2 == 0 ? 1 : 0); j < 8; j += 2) {
+//             game_state.board[i][j] = 'b'; // Black pieces
+//             game_state.board[7 - i][7 - j] = 'w'; // White pieces
+//         }
+//     }
+// }
+
+void start_daemon() {
+    pid_t pid;
+
+    pid = fork();
+    if (pid < 0) {
+        exit(EXIT_FAILURE);
     }
+    if (pid > 0) {
+        exit(EXIT_SUCCESS);
+    }
+
+    umask(0);
+    openlog("server_daemon", LOG_PID, LOG_DAEMON);
+
+    if (setsid() < 0) {
+        syslog(LOG_ERR, "Could not create process group leader.");
+        exit(EXIT_FAILURE);
+    }
+    if ((chdir("/")) < 0) {
+        syslog(LOG_ERR, "Could not change working directory to root.");
+        exit(EXIT_FAILURE);
+    }
+
+    // Close out the standard file descriptors
+    close(STDIN_FILENO);
+    close(STDOUT_FILENO);
+    close(STDERR_FILENO);
+}
+
+void error(const char *msg) {
+    syslog(LOG_ERR, "%s", msg);
+    exit(1);
 }
 
 void send_to_client(int client_socket, const char *message) {
