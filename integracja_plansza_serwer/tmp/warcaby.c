@@ -3,7 +3,7 @@
 
 #define ROZMIAR_PLANSZY 8
 
-void inicjalizujPlansze(char plansza[ROZMIAR_PLANSZY][ROZMIAR_PLANSZY]) {
+void initialize_board(char plansza[ROZMIAR_PLANSZY][ROZMIAR_PLANSZY]) {
     for (int i = 0; i < ROZMIAR_PLANSZY; i++) {
         for (int j = 0; j < ROZMIAR_PLANSZY; j++) {
             if ((i + j) % 2 == 0)
@@ -89,7 +89,7 @@ int main() {
     char gracz = 'X'; // Początkowy gracz
     int x1, y1, x2, y2;
 
-    inicjalizujPlansze(plansza);
+    initialize_board(plansza);
     wyswietlPlansze(plansza);
 
     for (int i = 0; i < 5; i++) {

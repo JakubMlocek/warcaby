@@ -3,10 +3,12 @@
 #include <string.h>
 #include <unistd.h>
 #include <arpa/inet.h>
+#include "warcaby.h"
 
 #define SERVER_IP "127.0.0.1"
 #define PORT 12345
 #define BUFFER_SIZE 1024
+#define BOARD_SIZE 8
 
 
 int main() {

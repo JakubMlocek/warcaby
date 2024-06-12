@@ -10,7 +10,7 @@ int main()
     char gracz = 'X'; // Początkowy gracz
     int x1, y1, x2, y2;
 
-    inicjalizujPlansze(plansza);
+    initialize_board(plansza);
     wyswietlPlansze(plansza);
 
     for (int i = 0; i < 5; i++) {

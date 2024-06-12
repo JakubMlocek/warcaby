@@ -10,13 +10,7 @@
 #define PORT 12345
 #define MAX_CLIENTS 2
 #define BUFFER_SIZE 1024
-#define ROZMIAR_PLANSZY 8 
-
-typedef struct {
-    int socket;
-    struct sockaddr_in address;
-    socklen_t addr_len;  // Changed from int to socklen_t
-} connection_t;
+#define BOARD_SIZE 8 
 
 int clients[MAX_CLIENTS];
 int client_count = 0;
@@ -35,19 +29,16 @@ int main() {
     int server_fd, client1_fd, client2_fd;
     struct sockaddr_in server_addr, client1_addr, client2_addr;
     int addrlen = sizeof(server_addr);
-    connection_t *connection;
-    pthread_t thread;
-    char buffer[BUFFER_SIZE];  // Declare buffer here
-    int kod_gry = 1234;  // Example game code initialization
+    //int init_code = 1234;  // Example game code initialization
 
     // Inicjalizacja zmiennych do gry
-    char plansza[ROZMIAR_PLANSZY][ROZMIAR_PLANSZY];
+    char board[BOARD_SIZE][BOARD_SIZE];
     srand(time(NULL));
-    char obecny_gracz = (rand() % 2 == 0) ? 'X' : 'O'; // Losowanie początkowego gracza
-    int x1, y1, x2, y2;
+    //char current_player = (rand() % 2 == 0) ? 'X' : 'O'; // Losowanie początkowego gracza
+    //int x1, y1, x2, y2;
 
-    inicjalizujPlansze(plansza);
-    wyswietlPlansze(plansza);
+    initialize_board(board);
+    print_board(board);
 
     // Create server socket
     server_fd = socket(AF_INET, SOCK_STREAM, 0);
@@ -78,6 +69,7 @@ int main() {
     }
 
     printf("Server listening on port %d\n", PORT);
+    char* buffer = get_buffer_from_board(board);
 
 
     if ((client1_fd = accept(server_fd, (struct sockaddr *)&client1_addr, (socklen_t*)&addrlen)) < 0) {
@@ -86,6 +78,9 @@ int main() {
     }
 
     printf("Client 1 connected\n");
+    buffer = get_buffer_from_board(board);
+    send(client1_fd, buffer, BOARD_SIZE * BOARD_SIZE, 0);
+
 
     // Accept second client connection
     if ((client2_fd = accept(server_fd, (struct sockaddr *)&client2_addr, (socklen_t*)&addrlen)) < 0) {
@@ -93,16 +88,11 @@ int main() {
         exit(EXIT_FAILURE);
     }
 
+
     printf("Client 2 connected\n");
+    buffer = get_buffer_from_board(board);
+    send(client2_fd, buffer, BOARD_SIZE * BOARD_SIZE, 0);
 
-
-
-    //for (int i = 0; i < 5; i++) {
-    //    printf("Ruch gracza %c. Podaj ruch w formacie 'x1 y1 x2 y2' (koordynaty od 1 do 8): ", gracz);
-    //   scanf("%d %d %d %d", &x1, &y1, &x2, &y2);
-    //    wykonajRuch(plansza, x1 - 1, y1 - 1, x2 - 1, y2 - 1, &gracz);
-    //    wyswietlPlansze(plansza);
-    //}
 
     close(server_fd);
     return 0;
