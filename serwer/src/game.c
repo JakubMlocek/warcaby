@@ -56,6 +56,11 @@ void print_board(char board[BOARD_SIZE][BOARD_SIZE]) {
 }
 
 void make_move(char board[BOARD_SIZE][BOARD_SIZE], int x1, int y1, int x2, int y2, char player) {
+    x1-=1;
+    y1-=1;
+    x2-=1;
+    y2-=1;
+
     if (board[x1][y1] != player) {
         printf("To nie jest twoj pionek!\n");
         return;

@@ -71,15 +71,26 @@ int main() {
     printf("Server listening on port %d\n", PORT);
     char* buffer = get_buffer_from_board(board);
 
-
+    //polaczenie pierwszego klienta
     if ((client1_fd = accept(server_fd, (struct sockaddr *)&client1_addr, (socklen_t*)&addrlen)) < 0) {
         perror("accept");
         exit(EXIT_FAILURE);
     }
 
+    //wyslanie planszy do pierwszego klienta
     printf("Client 1 connected\n");
     buffer = get_buffer_from_board(board);
     send(client1_fd, buffer, BOARD_SIZE * BOARD_SIZE, 0);
+    
+    //odbior planszy od pierwszego klienta
+    if (recv(client1_fd, buffer, sizeof(buffer), 0) < 0) {
+        perror("recv failed");
+        exit(EXIT_FAILURE);
+    }
+    printf("%s",buffer);
+
+    set_board_to_buffer(board, buffer);
+    print_board(board);
 
 
     // Accept second client connection

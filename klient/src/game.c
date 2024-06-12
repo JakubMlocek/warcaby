@@ -56,6 +56,11 @@ void print_board(char board[BOARD_SIZE][BOARD_SIZE]) {
 }
 
 void make_move(char board[BOARD_SIZE][BOARD_SIZE], int x1, int y1, int x2, int y2, char player) {
+    x1-=1;
+    y1-=1;
+    x2-=1;
+    y2-=1;
+
     if (board[x1][y1] != player) {
         printf("To nie jest twoj pionek!\n");
         return;
@@ -82,7 +87,6 @@ void make_move(char board[BOARD_SIZE][BOARD_SIZE], int x1, int y1, int x2, int y
         board[x2][y2] = player;
         board[x1][y1] = ' ';
         board[(x1 + x2) / 2][(y1 + y2) / 2] = ' '; // Usunięcie piona przeciwnika
-        player = (player == 'X') ? 'O' : 'X'; // Zmiana playera
     } else {
         printf("Nieprawidłowy ruch!\n");
     }
@@ -105,9 +109,9 @@ char* get_buffer_from_board(char board[BOARD_SIZE][BOARD_SIZE]) {
 }
 
 void set_board_to_buffer(char board[BOARD_SIZE][BOARD_SIZE], char *buffer) {
-    for (int i = 0; i < 8; i++) {
-        for (int j = 0; j < 8; j++) {
-            board[i][j] = buffer[i * 8 + j];
+    for (int i = 0; i < BOARD_SIZE; i++) {
+        for (int j = 0; j < BOARD_SIZE; j++) {
+            board[i][j] = buffer[i * BOARD_SIZE + j];
         }
     }
 }
