@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <signal.h>
 #include <unistd.h>
 #include <arpa/inet.h>
 
@@ -8,12 +9,16 @@
 #define PORT 12345
 #define BUFFER_SIZE 1024
 
+int sockfd;
+
+void signal_handler(int sig);
 
 int main() {
-    int sockfd;
     struct sockaddr_in server_addr;
     char buffer[BUFFER_SIZE];
     int bytes_read;
+
+    signal(SIGINT, signal_handler);
 
     // Create client socket
     sockfd = socket(AF_INET, SOCK_STREAM, 0);
@@ -43,12 +48,24 @@ int main() {
     // Main game loop
     
 	while (1) {
-
-		
-
+        
+        if ((bytes_read = read(sockfd, buffer, BUFFER_SIZE)) < 0) {
+            perror("Reading from socket failed");
+            exit(EXIT_FAILURE);
+        }
+        buffer[bytes_read] = '\0';
+        printf("Received message: %s\n", buffer);
 	}
 
 
     close(sockfd);
     return 0;
+}
+
+void signal_handler(int sig) {
+    printf("Ctrl+C received. Closing socket and exiting...\n");
+    // Close the socket gracefully
+    close(sockfd);
+    // Exit the program
+    exit(0);
 }

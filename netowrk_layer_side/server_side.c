@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <signal.h>
 #include <unistd.h>
 #include <arpa/inet.h>
 #include <pthread.h>
@@ -24,7 +25,6 @@ typedef struct {
 game_state_t game_state;
 int clients[MAX_CLIENTS];
 int client_count = 0;
-pthread_mutex_t game_lock;
 
 void initialize_board() {
     memset(game_state.board, ' ', sizeof(game_state.board));
@@ -38,7 +38,10 @@ void initialize_board() {
 }
 
 void send_to_client(int client_socket, const char *message) {
-    send(client_socket, message, strlen(message), 0);
+    if (send(client_socket, message, strlen(message), 0) < 0) {
+        perror("Writing to socket failed");
+        exit(EXIT_FAILURE);
+    }
 }
 
 void broadcast(const char *message) {
@@ -53,9 +56,7 @@ int main() {
     struct sockaddr_in server_addr, client1_addr, client2_addr;
     int addrlen = sizeof(server_addr);
     connection_t *connection;
-    pthread_t thread;
     char buffer[BUFFER_SIZE];  // Declare buffer here
-    int game_code = 1234;  // Example game code initialization
 
     // Initialize game state
     initialize_board();
@@ -97,20 +98,25 @@ int main() {
         perror("accept");
         exit(EXIT_FAILURE);
     }
-
     printf("Client 1 connected\n");
 
-    // Accept second client connection
+    
+
     if ((client2_fd = accept(server_fd, (struct sockaddr *)&client2_addr, (socklen_t*)&addrlen)) < 0) {
         perror("accept");
         exit(EXIT_FAILURE);
     }
-
     printf("Client 2 connected\n");
 
+    clients[0] = client1_fd;
+    clients[1] = client2_fd;
+
+    while (1) {
+        broadcast("LOL");
+        sleep(5);        
+    }
     
 
     close(server_fd);
-    pthread_mutex_destroy(&game_lock);
     return 0;
 }
