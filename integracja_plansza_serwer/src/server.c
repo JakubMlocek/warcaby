@@ -38,7 +38,7 @@ int main() {
     connection_t *connection;
     pthread_t thread;
     char buffer[BUFFER_SIZE];  // Declare buffer here
-    int game_code = 1234;  // Example game code initialization
+    int kod_gry = 1234;  // Example game code initialization
 
     // Inicjalizacja zmiennych do gry
     char plansza[ROZMIAR_PLANSZY][ROZMIAR_PLANSZY];
@@ -105,6 +105,5 @@ int main() {
     //}
 
     close(server_fd);
-    pthread_mutex_destroy(&game_lock);
     return 0;
 }

@@ -5,16 +5,16 @@ CC = gcc
 CFLAGS = -Wall -pthread
 
 # Executable name
-TARGET = server
+TARGET = compiled/server
 
-# Source files
-SRCS = server.c client.c warcaby.c
-
-# Header files
-HDRS = warcaby.h
+# Source and header files
+SRCDIR = src
+BUILDDIR = skompilowane
+SRCS = $(wildcard $(SRCDIR)/*.c)
+HDRS = $(wildcard $(SRCDIR)/*.h)
 
 # Object files
-OBJS = $(SRCS:.c=.o)
+OBJS = $(patsubst $(SRCDIR)/%.c, $(BUILDDIR)/%.o, $(SRCS))
 
 # Default target
 all: $(TARGET)
@@ -24,12 +24,16 @@ $(TARGET): $(OBJS)
 	$(CC) $(CFLAGS) -o $(TARGET) $(OBJS)
 
 # Rule to build object files
-%.o: %.c $(HDRS)
+$(BUILDDIR)/%.o: $(SRCDIR)/%.c $(HDRS) | $(BUILDDIR)
 	$(CC) $(CFLAGS) -c $< -o $@
+
+# Create the build directory if it doesn't exist
+$(BUILDDIR):
+	mkdir -p $(BUILDDIR)
 
 # Clean up object files and the executable
 clean:
-	rm -f $(OBJS) $(TARGET)
+	rm -f $(BUILDDIR)/*.o $(TARGET)
 
 # Phony targets
 .PHONY: all clean
