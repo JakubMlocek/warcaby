@@ -53,6 +53,8 @@ int main() {
 
     set_board_to_buffer(board, buffer);
     print_board(board);
+    make_move(board, 6, 1, 5, 2, 'O');
+    print_board(board);
 
     close(sockfd);
     return 0;

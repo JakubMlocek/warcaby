@@ -13,9 +13,9 @@ void initialize_board(char board[BOARD_SIZE][BOARD_SIZE]) {
                 board[i][j] = ' '; // Puste pole
             else {
                 if (i < 3)
-                    board[i][j] = 'X'; // Pionki gracza 1
+                    board[i][j] = 'X'; // Pionki playera 1
                 else if (i > BOARD_SIZE - 4)
-                    board[i][j] = 'O'; // Pionki gracza 2
+                    board[i][j] = 'O'; // Pionki playera 2
                 else
                     board[i][j] = ' '; // Puste pole
             }
@@ -55,8 +55,8 @@ void print_board(char board[BOARD_SIZE][BOARD_SIZE]) {
     }
 }
 
-void wykonajRuch(char board[BOARD_SIZE][BOARD_SIZE], int x1, int y1, int x2, int y2, char* gracz) {
-    if (board[x1][y1] != *gracz) {
+void make_move(char board[BOARD_SIZE][BOARD_SIZE], int x1, int y1, int x2, int y2, char player) {
+    if (board[x1][y1] != player) {
         printf("To nie jest twoj pionek!\n");
         return;
     }
@@ -66,7 +66,7 @@ void wykonajRuch(char board[BOARD_SIZE][BOARD_SIZE], int x1, int y1, int x2, int
         return;
     }
 
-    if ((*gracz == 'X' && x2 <= x1) || (*gracz == 'O' && x2 >= x1)) {
+    if ((player == 'X' && x2 <= x1) || (player == 'O' && x2 >= x1)) {
         printf("Nieprawidłowy kierunek ruchu!\n");
         return;
     }
@@ -75,14 +75,14 @@ void wykonajRuch(char board[BOARD_SIZE][BOARD_SIZE], int x1, int y1, int x2, int
     int dy = abs(y2 - y1);
 
     if (dx == 1 && dy == 1) {
-        board[x2][y2] = *gracz;
+        board[x2][y2] = player;
         board[x1][y1] = ' ';
-        *gracz = (*gracz == 'X') ? 'O' : 'X'; // Zmiana gracza
-    } else if (dx == 2 && dy == 2 && board[(x1 + x2) / 2][(y1 + y2) / 2] != ' ' && board[(x1 + x2) / 2][(y1 + y2) / 2] != *gracz) {
-        board[x2][y2] = *gracz;
+        player = (player == 'X') ? 'O' : 'X'; // Zmiana playera
+    } else if (dx == 2 && dy == 2 && board[(x1 + x2) / 2][(y1 + y2) / 2] != ' ' && board[(x1 + x2) / 2][(y1 + y2) / 2] != player) {
+        board[x2][y2] = player;
         board[x1][y1] = ' ';
         board[(x1 + x2) / 2][(y1 + y2) / 2] = ' '; // Usunięcie piona przeciwnika
-        *gracz = (*gracz == 'X') ? 'O' : 'X'; // Zmiana gracza
+        player = (player == 'X') ? 'O' : 'X'; // Zmiana playera
     } else {
         printf("Nieprawidłowy ruch!\n");
     }
