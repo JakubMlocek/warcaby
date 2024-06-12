@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #define BOARD_SIZE 8
 #define BUFFER_SIZE 1024

@@ -5,7 +5,7 @@
 #include <arpa/inet.h>
 #include <pthread.h>
 #include <time.h>
-#include "warcaby.h"
+#include "game.h"
 
 #define PORT 12345
 #define MAX_CLIENTS 2
