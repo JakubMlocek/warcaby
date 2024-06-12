@@ -9,7 +9,7 @@ TARGET = compiled/server
 
 # Source and header files
 SRCDIR = src
-BUILDDIR = skompilowane
+BUILDDIR = compiled
 SRCS = $(wildcard $(SRCDIR)/*.c)
 HDRS = $(wildcard $(SRCDIR)/*.h)
 
