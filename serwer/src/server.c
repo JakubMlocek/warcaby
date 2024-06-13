@@ -70,7 +70,12 @@ int main() {
 
     printf("Server listening on port %d\n", PORT);
 
+    char board[BOARD_SIZE][BOARD_SIZE];
+    initialize_board(board);
+
+    // Main game loop
     
+    char* buffer = get_buffer_from_board(board);
 
     if ((client1_fd = accept(server_fd, (struct sockaddr *)&client1_addr, (socklen_t*)&addrlen)) < 0) {
         perror("accept");
