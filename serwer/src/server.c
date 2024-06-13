@@ -12,16 +12,13 @@
 #define BOARD_SIZE 8 
 
 
+
 int main() {
     int server_fd, client1_fd, client2_fd;
     struct sockaddr_in server_addr, client1_addr, client2_addr;
     int addrlen = sizeof(server_addr);
-    //int game_code = 1234;  // Example game code initialization
 
-    // Inicjalizacja zmiennych do gry
     char board[BOARD_SIZE][BOARD_SIZE];
-    //srand(time(NULL));
-    //char current_player = (rand() % 2 == 0) ? 'X' : 'O'; // Losowanie początkowego gracza
 
     initialize_board(board);
     print_board(board);
@@ -36,7 +33,6 @@ int main() {
     int optval = 1;
     setsockopt(server_fd, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(optval));
 
-    // Bind socket
     server_addr.sin_family = AF_INET;
     server_addr.sin_addr.s_addr = INADDR_ANY;
     server_addr.sin_port = htons(PORT);
@@ -47,7 +43,6 @@ int main() {
         exit(EXIT_FAILURE);
     }
 
-    // Listen for incoming connections
     if (listen(server_fd, MAX_CLIENTS) < 0) {
         perror("Listen failed");
         close(server_fd);
@@ -74,6 +69,18 @@ int main() {
     }
     printf("Client 2 connected\n");
 
+    // Losowanie ktory z graczy gra X a ktory O
+    srand(time(NULL));
+    int rand_num = rand() % 2;
+    char player1 = (rand_num == 0) ? 'X' : 'O';
+    char player2 = (player1 == 'X') ? 'O' : 'X';
+
+    //Przeysłamy powyzsze informacje do klientow
+    send(client1_fd, &player1, sizeof(player1), 0);
+    send(client2_fd, &player2, sizeof(player2), 0);
+
+    printf("Client 1 is: %c\n", player1);
+    printf("Client 2 is: %c\n", player2);
 
     // Main game loop
     while(1){

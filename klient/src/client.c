@@ -42,19 +42,17 @@ int main() {
     char board[BOARD_SIZE][BOARD_SIZE];
     
     initialize_board(board);
-    //Wybor gracza
+    
+    
+    //Odbieramy informacje od serwera, ktorym graczem jestesmy.
     char player_char;
 
-    do {
-        printf("Wybierz kim grasz (O lub X): ");
-        scanf(" %c", &player_char);
-        if (player_char != 'O' && player_char != 'X') {
-            printf("Zły znak. Wybierz 'O' or 'X'.\n");
-        }
-    } while (player_char != 'O' && player_char != 'X');
+    if (recv(sockfd, &player_char, BUFFER_SIZE, 0) < 0) {
+        perror("recv failed");
+        exit(EXIT_FAILURE);
+    }
 
     printf("Jestes graczem: %c\n", player_char);
-
 
     // Main game loop
     char *buffer = malloc(BUFFER_SIZE);
@@ -68,7 +66,6 @@ int main() {
         //printf("%s\n",buffer);
         set_board_to_buffer(board, buffer);
         print_board(board);
-        printf("Twoja kolej! Podaj ruch w formacie 'x1 y1 x2 y2' (koordynaty od 1 do 8): ");
         make_move(board, player_char);
 
         buffer = get_buffer_from_board(board);   

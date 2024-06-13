@@ -60,11 +60,9 @@ void make_move(char board[BOARD_SIZE][BOARD_SIZE], char player) {
     int x1, y1, x2, y2;
 
     while(!correct_move){
+        printf("Twoja kolej! Podaj ruch w formacie 'x1 y1 x2 y2' (koordynaty od 1 do 8): ");
+
         scanf("%d %d %d %d", &x1, &y1, &x2, &y2);
-        x1-=1;
-        y1-=1;
-        x2-=1;
-        y2-=1;
 
         if (x1 > BOARD_SIZE || x2 > BOARD_SIZE || y1 > BOARD_SIZE || y2 > BOARD_SIZE){
             printf("Nie ma takiego pola!\n");
@@ -75,6 +73,11 @@ void make_move(char board[BOARD_SIZE][BOARD_SIZE], char player) {
             printf("Nie ma takiego pola!\n");
             continue;
         }
+
+        x1-=1;
+        y1-=1;
+        x2-=1;
+        y2-=1;
 
         if (board[x1][y1] != player) {
             printf("To nie jest twój pionek!\n");
