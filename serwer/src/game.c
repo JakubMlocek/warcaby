@@ -55,36 +55,70 @@ void print_board(char board[BOARD_SIZE][BOARD_SIZE]) {
     }
 }
 
-void make_move(char board[BOARD_SIZE][BOARD_SIZE], int x1, int y1, int x2, int y2, char player) {
-    x1-=1;
-    y1-=1;
-    x2-=1;
-    y2-=1;
+void make_move(char board[BOARD_SIZE][BOARD_SIZE], char player) {
+    int correct_move = 0;
+    int x1, y1, x2, y2;
 
-    if (board[x1][y1] != player) {
-        printf("To nie jest twoj pionek!\n");
-        return;
+    while(!correct_move){
+        scanf("%d %d %d %d", &x1, &y1, &x2, &y2);
+        x1-=1;
+        y1-=1;
+        x2-=1;
+        y2-=1;
+
+        if (x1 > BOARD_SIZE || x2 > BOARD_SIZE || y1 > BOARD_SIZE || y2 > BOARD_SIZE){
+            printf("Nie ma takiego pola!\n");
+            continue;
+        }
+
+        if (x1 < 1  || x2 < 1 || y1 < 1 || y2 < 1){
+            printf("Nie ma takiego pola!\n");
+            continue;
+        }
+
+        if (board[x1][y1] != player) {
+            printf("To nie jest twój pionek!\n");
+            continue;
+        }
+
+        if (board[x2][y2] != ' ') {
+            printf("Ruch na zajęte pole!\n");
+            continue;
+        }
+
+        if ((player == 'X' && x2 <= x1) || (player == 'O' && x2 >= x1)) {
+            printf("Nieprawidłowy kierunek ruchu!\n");
+            continue;;
+        }
+
+        int dx = abs(x2 - x1);
+        int dy = abs(y2 - y1);
+
+        if (dx == 1 && dy == 1) {
+            //zwykly ruch
+            board[x2][y2] = player;
+            board[x1][y1] = ' ';
+            correct_move = 1;
+        } else if (dx == 2 && dy == 2) {
+            //zbijanie piona przeciwnika
+            int mid_x = (x1 + x2) / 2;
+            int mid_y = (y1 + y2) / 2;
+            char opponent = (player == 'X') ? 'O' : 'X';
+            if (board[mid_x][mid_y] == opponent) {
+                board[x2][y2] = player;
+                board[x1][y1] = ' ';
+                board[mid_x][mid_y] = ' ';
+                correct_move = 1;
+            } else {
+                printf("Nieprawidłowy ruch! Brak pionka przeciwnika do zbicia.\n");
+                continue;
+            }
+        } else {
+            printf("Nieprawidłowy ruch!\n");
+            continue;
+        }
     }
-
-    if (board[x2][y2] != ' ') {
-        printf("Ruch na zajęte pole!\n");
-        return;
-    }
-
-    if ((player == 'X' && x2 <= x1) || (player == 'O' && x2 >= x1)) {
-        printf("Nieprawidłowy kierunek ruchu!\n");
-        return;
-    }
-
-    int dx = abs(x2 - x1);
-    int dy = abs(y2 - y1);
-
-    if (dx == 1 && dy == 1) {
-        board[x2][y2] = player;
-        board[x1][y1] = ' ';
-    } else {
-        printf("Nieprawidłowy ruch!\n");
-    }
+    return;
 }
 
 char* get_buffer_from_board(char board[BOARD_SIZE][BOARD_SIZE]) {

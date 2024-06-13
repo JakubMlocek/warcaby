@@ -40,8 +40,7 @@ int main() {
     printf("Connected to server at %s:%d\n", SERVER_IP, PORT);
 
     char board[BOARD_SIZE][BOARD_SIZE];
-    int x1, y1, x2, y2;
-
+    
     initialize_board(board);
     //Wybor gracza
     char player_char;
@@ -70,8 +69,7 @@ int main() {
         set_board_to_buffer(board, buffer);
         print_board(board);
         printf("Twoja kolej! Podaj ruch w formacie 'x1 y1 x2 y2' (koordynaty od 1 do 8): ");
-        scanf("%d %d %d %d", &x1, &y1, &x2, &y2);
-        make_move(board, x1, y1, x2, y2, player_char);
+        make_move(board, player_char);
 
         buffer = get_buffer_from_board(board);   
         // Wysylanie buforu z planszy do serwera
