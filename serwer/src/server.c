@@ -90,7 +90,6 @@ int main() {
         set_board_to_buffer(board, buffer);
         print_board(board);
 
-
         // wyslanie planszy do drugiego klienta
         buffer = get_buffer_from_board(board);
         send(client2_fd, buffer, BUFFER_SIZE, 0);

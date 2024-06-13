@@ -121,6 +121,18 @@ void make_move(char board[BOARD_SIZE][BOARD_SIZE], char player) {
     return;
 }
 
+int check_pieces_left(char board[BOARD_SIZE][BOARD_SIZE], char player) {
+    int count = 0;
+    for (int i = 0; i < BOARD_SIZE; i++) {
+        for (int j = 0; j < BOARD_SIZE; j++) {
+            if (board[i][j] == player) {
+                count++;
+            }
+        }
+    }
+    return count;
+}
+
 char* get_buffer_from_board(char board[BOARD_SIZE][BOARD_SIZE]) {
     char *buffer = malloc(BUFFER_SIZE);
     if (buffer == NULL) {
