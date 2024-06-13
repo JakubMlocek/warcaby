@@ -120,6 +120,8 @@ void make_move(char board[BOARD_SIZE][BOARD_SIZE], char player) {
             printf("Nieprawidłowy ruch!\n");
             continue;
         }
+        printf("Trwa ruch przeciwnika.\n");
+
     }
     return;
 }
