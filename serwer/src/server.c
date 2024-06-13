@@ -83,6 +83,8 @@ int main() {
         perror("accept");
         exit(EXIT_FAILURE);
     }
+    printf("Client 2 connected\n");
+
 
     // Main game loop
     while(1){
@@ -99,8 +101,6 @@ int main() {
         print_board(board);
 
 
-
-        printf("Client 2 connected\n");
         // wyslanie planszy do drugiego klienta
         buffer = get_buffer_from_board(board);
         send(client2_fd, buffer, BUFFER_SIZE, 0);
@@ -112,7 +112,7 @@ int main() {
         }
         set_board_to_buffer(board, buffer);
         print_board(board);
-
+        buffer = get_buffer_from_board(board);
         sleep(1);
     }
 

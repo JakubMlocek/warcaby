@@ -68,17 +68,14 @@ int main() {
             perror("recv failed");
             exit(EXIT_FAILURE);
         }
-        printf("%s\n",buffer);
-
-
+        set_board_to_buffer(board, buffer);
+        print_board(board);
         printf("Twoja kolej! Podaj ruch w formacie 'x1 y1 x2 y2' (koordynaty od 1 do 8): ");
         scanf("%d %d %d %d", &x1, &y1, &x2, &y2);
         make_move(board, x1, y1, x2, y2, player_char);
-        print_board(board);
 
         buffer = get_buffer_from_board(board);   
-    
-        // Send buffer with board after our move to server
+        // Wysylanie buforu z planszy do serwera
         if (send(sockfd, buffer, BUFFER_SIZE, 0) < 0) {
             perror("send failed");
             exit(EXIT_FAILURE);

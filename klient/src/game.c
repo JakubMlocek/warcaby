@@ -82,11 +82,6 @@ void make_move(char board[BOARD_SIZE][BOARD_SIZE], int x1, int y1, int x2, int y
     if (dx == 1 && dy == 1) {
         board[x2][y2] = player;
         board[x1][y1] = ' ';
-        player = (player == 'X') ? 'O' : 'X'; // Zmiana playera
-    } else if (dx == 2 && dy == 2 && board[(x1 + x2) / 2][(y1 + y2) / 2] != ' ' && board[(x1 + x2) / 2][(y1 + y2) / 2] != player) {
-        board[x2][y2] = player;
-        board[x1][y1] = ' ';
-        board[(x1 + x2) / 2][(y1 + y2) / 2] = ' '; // Usunięcie piona przeciwnika
     } else {
         printf("Nieprawidłowy ruch!\n");
     }
