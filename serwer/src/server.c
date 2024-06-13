@@ -112,6 +112,8 @@ int main() {
         }
         set_board_to_buffer(board, buffer);
         print_board(board);
+
+        sleep(1);
     }
 
 
