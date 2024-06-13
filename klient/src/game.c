@@ -108,7 +108,7 @@ char* get_buffer_from_board(char board[BOARD_SIZE][BOARD_SIZE]) {
     return buffer;
 }
 
-void set_board_to_buffer(char board[BOARD_SIZE][BOARD_SIZE], char *buffer) {
+void set_board_to_buffer(char board[BOARD_SIZE][BOARD_SIZE], char* buffer) {
     for (int i = 0; i < BOARD_SIZE; i++) {
         for (int j = 0; j < BOARD_SIZE; j++) {
             board[i][j] = buffer[i * BOARD_SIZE + j];

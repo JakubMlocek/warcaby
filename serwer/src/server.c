@@ -35,7 +35,6 @@ int main() {
     char board[BOARD_SIZE][BOARD_SIZE];
     //srand(time(NULL));
     //char current_player = (rand() % 2 == 0) ? 'X' : 'O'; // Losowanie początkowego gracza
-    int x1, y1, x2, y2;
 
     initialize_board(board);
     print_board(board);
@@ -70,39 +69,51 @@ int main() {
 
     printf("Server listening on port %d\n", PORT);
 
-    char board[BOARD_SIZE][BOARD_SIZE];
     initialize_board(board);
-
-    // Main game loop
     
     char* buffer = get_buffer_from_board(board);
 
+    //waiting for clients
     if ((client1_fd = accept(server_fd, (struct sockaddr *)&client1_addr, (socklen_t*)&addrlen)) < 0) {
         perror("accept");
         exit(EXIT_FAILURE);
     }
     printf("Client 1 connected\n");
-  
-    // wyslanie planszy do pierwszego klienta
-    buffer = get_buffer_from_board(board);
-    send(client1_fd, buffer, BOARD_SIZE * BOARD_SIZE, 0);
-
-    // odbior planszy od pierwszego klienta
-    if (recv(client1_fd, buffer, sizeof(buffer), 0) < 0) {
-        perror("recv failed");
-        exit(EXIT_FAILURE);
-    }
-    printf("%s", buffer);
-    set_board_to_buffer(board, buffer);
-    print_board(board);
-
-    // Accept second client connection
     if ((client2_fd = accept(server_fd, (struct sockaddr *)&client2_addr, (socklen_t*)&addrlen)) < 0) {
         perror("accept");
         exit(EXIT_FAILURE);
     }
 
-    printf("Client 2 connected\n");
+    // Main game loop
+    while(1){
+        // wyslanie planszy do pierwszego klienta
+        buffer = get_buffer_from_board(board);
+        send(client1_fd, buffer, BOARD_SIZE * BOARD_SIZE, 0);
+
+        // odbior planszy od pierwszego klienta
+        if (recv(client1_fd, buffer, BUFFER_SIZE, 0) < 0) {
+            perror("recv failed");
+            exit(EXIT_FAILURE);
+        }
+        set_board_to_buffer(board, buffer);
+        print_board(board);
+
+
+
+        printf("Client 2 connected\n");
+        // wyslanie planszy do drugiego klienta
+        buffer = get_buffer_from_board(board);
+        send(client2_fd, buffer, BUFFER_SIZE, 0);
+
+        // odbior planszy od drugiego klienta
+        if (recv(client2_fd, buffer, sizeof(buffer), 0) < 0) {
+            perror("recv failed");
+            exit(EXIT_FAILURE);
+        }
+        set_board_to_buffer(board, buffer);
+        print_board(board);
+    }
+
 
     close(server_fd);
     return 0;
