@@ -3,7 +3,7 @@
 #include <string.h>
 
 #define BOARD_SIZE 8
-#define BUFFER_SIZE 1024
+#define BUFFER_SIZE 1048
 
 
 void initialize_board(char board[BOARD_SIZE][BOARD_SIZE]) {

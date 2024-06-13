@@ -1,6 +1,10 @@
 {
     "files.associations": {
         "inet.h": "c",
-        "unistd.h": "c"
+        "unistd.h": "c",
+        "game.h": "c",
+        "string.h": "c",
+        "stdio.h": "c",
+        "time.h": "c"
     }
 }

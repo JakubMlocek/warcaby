@@ -9,21 +9,8 @@
 
 #define PORT 12345
 #define MAX_CLIENTS 2
-#define BUFFER_SIZE 1024
 #define BOARD_SIZE 8 
 
-int clients[MAX_CLIENTS];
-int client_count = 0;
-
-void send_to_client(int client_socket, const char *message) {
-    send(client_socket, message, strlen(message), 0);
-}
-
-void broadcast(const char *message) {
-    for (int i = 0; i < MAX_CLIENTS; i++) {
-        send_to_client(clients[i], message);
-    }
-}
 
 int main() {
     int server_fd, client1_fd, client2_fd;
@@ -71,7 +58,9 @@ int main() {
 
     initialize_board(board);
     
-    char* buffer = get_buffer_from_board(board);
+    char *buffer = malloc(BUFFER_SIZE);
+
+    memset(buffer, 0, BUFFER_SIZE);
 
     //waiting for clients
     if ((client1_fd = accept(server_fd, (struct sockaddr *)&client1_addr, (socklen_t*)&addrlen)) < 0) {
@@ -90,6 +79,7 @@ int main() {
     while(1){
         // wyslanie planszy do pierwszego klienta
         buffer = get_buffer_from_board(board);
+        //printf("%s\n",buffer);
         send(client1_fd, buffer, BOARD_SIZE * BOARD_SIZE, 0);
 
         // odbior planszy od pierwszego klienta
@@ -106,13 +96,12 @@ int main() {
         send(client2_fd, buffer, BUFFER_SIZE, 0);
 
         // odbior planszy od drugiego klienta
-        if (recv(client2_fd, buffer, sizeof(buffer), 0) < 0) {
+        if (recv(client2_fd, buffer, BUFFER_SIZE, 0) < 0) {
             perror("recv failed");
             exit(EXIT_FAILURE);
         }
         set_board_to_buffer(board, buffer);
         print_board(board);
-        buffer = get_buffer_from_board(board);
         sleep(1);
     }
 

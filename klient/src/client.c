@@ -7,7 +7,6 @@
 
 #define SERVER_IP "127.0.0.1"
 #define PORT 12345
-#define BUFFER_SIZE 1024
 #define BOARD_SIZE 8
 
 
@@ -59,15 +58,15 @@ int main() {
 
 
     // Main game loop
-    
-    char* buffer = get_buffer_from_board(board);
+    char *buffer = malloc(BUFFER_SIZE);
 
     while(1){
         // odbieranie planszy z serwera:
-        if (recv(sockfd, buffer, sizeof(buffer), 0) < 0) {
+        if (recv(sockfd, buffer, BUFFER_SIZE, 0) < 0) {
             perror("recv failed");
             exit(EXIT_FAILURE);
         }
+        //printf("%s\n",buffer);
         set_board_to_buffer(board, buffer);
         print_board(board);
         printf("Twoja kolej! Podaj ruch w formacie 'x1 y1 x2 y2' (koordynaty od 1 do 8): ");
