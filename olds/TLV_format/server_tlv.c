@@ -14,8 +14,11 @@
 #define PORT 12345
 #define MAX_CLIENTS 2
 #define BOARD_SIZE 8 
+#define BUFFER_SIZE 1024
 
 FILE *log_file;
+
+#define BUFFER_SIZE 1024
 
 unsigned char* tlv_encode(const char* data, size_t data_len, size_t* tlv_len) {
     // Calculate total TLV length
@@ -47,9 +50,6 @@ char* tlv_decode(const unsigned char* tlv_data, size_t tlv_len) {
         fprintf(stderr, "Invalid TLV data\n");
         return NULL;
     }
-
-    // Type (assuming 1 byte, you can change it as per your requirements)
-    unsigned char tlv_type = tlv_data[0];
 
     // Length (assuming 1 byte, you can change it as per your requirements)
     unsigned char tlv_length = tlv_data[1];
@@ -146,54 +146,85 @@ void hostname_to_ip(const char *hostname, char *ip) {
     strcpy(ip, inet_ntoa(sockaddr_ipv4->sin_addr));
 
     freeaddrinfo(res);
-}
+}       
 
-void play_game(int client1_fd, int client2_fd){
+
+void play_game(int client1_fd, int client2_fd) {
     char board[BOARD_SIZE][BOARD_SIZE];
     initialize_board(board);
     print_board(board);
+    
     char *buffer = malloc(BUFFER_SIZE);
+    if (buffer == NULL) {
+        perror("Memory allocation failed");
+        exit(EXIT_FAILURE);
+    }
     memset(buffer, 0, BUFFER_SIZE);
 
-    while(1){
-        // wyslanie planszy do pierwszego klienta
-        buffer = get_buffer_from_board(board);
+    while (1) {
+        // Sending board to the first client
+        char *board_buffer = get_buffer_from_board(board);
         size_t tlv_size;
-        size_t original_len = strlen(buffer);
+        unsigned char *encoded_data = tlv_encode(board_buffer, strlen(board_buffer), &tlv_size);
+        free(board_buffer);
 
-        buffer = tlv_encode(buffer, original_len, &tlv_size);
-        //printf("%s\n",buffer);
-        
-        send(client1_fd, buffer, BOARD_SIZE * BOARD_SIZE, 0);
-
-        // odbior planszy od pierwszego klienta
-        if (recv(client1_fd, buffer, BUFFER_SIZE, 0) < 0) {
-            error("recv failed");
+        if (send(client1_fd, encoded_data, tlv_size, 0) < 0) {
+            perror("send failed");
             exit(EXIT_FAILURE);
         }
+        free(encoded_data);
 
-        buffer = tlv_decode(buffer, tlv_size);
-        set_board_to_buffer(board, buffer);
-        print_board(board);
-
-        original_len = strlen(buffer);
-
-        // wyslanie planszy do drugiego klienta
-        buffer = tlv_encode(get_buffer_from_board(board), original_len, &tlv_size);
-        send(client2_fd, buffer, BUFFER_SIZE, 0);
-
-        // odbior planszy od drugiego klienta
-        if (recv(client2_fd, buffer, BUFFER_SIZE, 0) < 0) {
-            error("recv failed");
+        // Receiving board from the first client
+        ssize_t bytes_received = recv(client1_fd, buffer, BUFFER_SIZE, 0);
+        if (bytes_received < 0) {
+            perror("recv failed");
             exit(EXIT_FAILURE);
         }
-        buffer = tlv_decode(buffer, tlv_size);
-        set_board_to_buffer(board, buffer);
+        printf("Received %zd bytes from client 1\n", bytes_received);
+
+        char *decoded_data = tlv_decode((unsigned char *)buffer, bytes_received);
+        if (decoded_data == NULL) {
+            fprintf(stderr, "TLV decoding failed\n");
+            exit(EXIT_FAILURE);
+        }
+        set_board_to_buffer(board, decoded_data);
         print_board(board);
-        original_len = strlen(buffer);
+        free(decoded_data);
+
+        // Sending board to the second client
+        board_buffer = get_buffer_from_board(board);
+        encoded_data = tlv_encode(board_buffer, strlen(board_buffer), &tlv_size);
+        free(board_buffer);
+
+        if (send(client2_fd, encoded_data, tlv_size, 0) < 0) {
+            perror("send failed");
+            exit(EXIT_FAILURE);
+        }
+        free(encoded_data);
+
+        // Receiving board from the second client
+        bytes_received = recv(client2_fd, buffer, BUFFER_SIZE, 0);
+        if (bytes_received < 0) {
+            perror("recv failed");
+            exit(EXIT_FAILURE);
+        }
+        printf("Received %zd bytes from client 2\n", bytes_received);
+
+        decoded_data = tlv_decode((unsigned char *)buffer, bytes_received);
+        if (decoded_data == NULL) {
+            fprintf(stderr, "TLV decoding failed\n");
+            exit(EXIT_FAILURE);
+        }
+        set_board_to_buffer(board, decoded_data);
+        print_board(board);
+        free(decoded_data);
+
         sleep(1);
     }
+    free(buffer);
 }
+
+
 void choose_players_pawns(int client1_fd, int client2_fd){
     // Losowanie ktory z graczy gra X a ktory O
     srand(time(NULL));

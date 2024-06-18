@@ -5,6 +5,9 @@
         "game.h": "c",
         "string.h": "c",
         "stdio.h": "c",
-        "time.h": "c"
+        "time.h": "c",
+        "fcntl.h": "c",
+        "stdarg.h": "c",
+        "pthread.h": "c"
     }
 }
