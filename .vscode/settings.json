@@ -8,6 +8,7 @@
         "time.h": "c",
         "fcntl.h": "c",
         "stdarg.h": "c",
-        "pthread.h": "c"
+        "pthread.h": "c",
+        "stdlib.h": "c"
     }
 }

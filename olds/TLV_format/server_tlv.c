@@ -18,63 +18,7 @@
 
 FILE *log_file;
 
-#define BUFFER_SIZE 1024
-
-unsigned char* tlv_encode(const char* data, size_t data_len, size_t* tlv_len) {
-    // Calculate total TLV length
-    *tlv_len = 2 + data_len;  // 1 byte for type + 1 byte for length + data length
-
-    // Allocate memory for TLV buffer
-    unsigned char* tlv_data = (unsigned char*)malloc(*tlv_len);
-    if (tlv_data == NULL) {
-        fprintf(stderr, "Memory allocation failed\n");
-        return NULL;
-    }
-
-    // Type (assuming 1 byte, you can change it as per your requirements)
-    tlv_data[0] = 0x01;
-
-    // Length (assuming 1 byte, you can change it as per your requirements)
-    tlv_data[1] = (unsigned char)data_len;
-
-    // Copy data into TLV buffer
-    memcpy(&tlv_data[2], data, data_len);
-
-    return tlv_data;
-}
-
-// Function to decode TLV data
-char* tlv_decode(const unsigned char* tlv_data, size_t tlv_len) {
-    // Validate minimum TLV length
-    if (tlv_len < 2) {
-        fprintf(stderr, "Invalid TLV data\n");
-        return NULL;
-    }
-
-    // Length (assuming 1 byte, you can change it as per your requirements)
-    unsigned char tlv_length = tlv_data[1];
-
-    // Validate total TLV length
-    if (tlv_len != 2 + tlv_length) {
-        fprintf(stderr, "Invalid TLV length\n");
-        return NULL;
-    }
-
-    // Allocate memory for data string
-    char* data = (char*)malloc(tlv_length + 1);
-    if (data == NULL) {
-        fprintf(stderr, "Memory allocation failed\n");
-        return NULL;
-    }
-
-    // Copy value part into data string
-    memcpy(data, &tlv_data[2], tlv_length);
-    data[tlv_length] = '\0';  // Null-terminate the string
-
-    return data;
-}
-
-
+// Funckja logująca
 void log_message(const char *msg) {
     char buffer[256];
     time_t now = time(NULL);
@@ -128,6 +72,50 @@ void start_daemon() {
     close(STDERR_FILENO);
 }
 
+
+// Funkcja kodująca TLV
+unsigned char* tlv_encode(const char* data, size_t data_len, size_t* tlv_len) {
+    // całkowita długość
+    *tlv_len = 2 + data_len;
+    unsigned char* tlv_data = (unsigned char*)malloc(*tlv_len);
+    if (tlv_data == NULL) {
+        fprintf(stderr, "Memory allocation failed\n");
+        return NULL;
+    }
+
+    tlv_data[0] = 0x01;
+    tlv_data[1] = (unsigned char)data_len;
+    memcpy(&tlv_data[2], data, data_len);
+
+    return tlv_data;
+}
+
+// Funkcja dekodująca TLV
+char* tlv_decode(const unsigned char* tlv_data, size_t tlv_len) {
+    if (tlv_len < 2) {
+        fprintf(stderr, "Invalid TLV data\n");
+        return NULL;
+    }
+    unsigned char tlv_length = tlv_data[1];
+    if (tlv_len != 2 + tlv_length) {
+        fprintf(stderr, "Invalid TLV length\n");
+        return NULL;
+    }
+
+    char* data = (char*)malloc(tlv_length + 1);
+    if (data == NULL) {
+        fprintf(stderr, "Memory allocation failed\n");
+        return NULL;
+    }
+
+    // Copy value part into data string
+    memcpy(data, &tlv_data[2], tlv_length);
+    data[tlv_length] = '\0';  // Null-terminate the string
+
+    return data;
+}
+
+// Znalezienie adresu IP serwera
 void hostname_to_ip(const char *hostname, char *ip) {
     struct addrinfo hints, *res;
     struct sockaddr_in *sockaddr_ipv4;
@@ -148,7 +136,7 @@ void hostname_to_ip(const char *hostname, char *ip) {
     freeaddrinfo(res);
 }       
 
-
+// Funkcja przebiegu gry
 void play_game(int client1_fd, int client2_fd) {
     char board[BOARD_SIZE][BOARD_SIZE];
     initialize_board(board);
@@ -162,7 +150,6 @@ void play_game(int client1_fd, int client2_fd) {
     memset(buffer, 0, BUFFER_SIZE);
 
     while (1) {
-        // Sending board to the first client
         char *board_buffer = get_buffer_from_board(board);
         size_t tlv_size;
         unsigned char *encoded_data = tlv_encode(board_buffer, strlen(board_buffer), &tlv_size);
@@ -174,7 +161,6 @@ void play_game(int client1_fd, int client2_fd) {
         }
         free(encoded_data);
 
-        // Receiving board from the first client
         ssize_t bytes_received = recv(client1_fd, buffer, BUFFER_SIZE, 0);
         if (bytes_received < 0) {
             perror("recv failed");
@@ -191,7 +177,6 @@ void play_game(int client1_fd, int client2_fd) {
         print_board(board);
         free(decoded_data);
 
-        // Sending board to the second client
         board_buffer = get_buffer_from_board(board);
         encoded_data = tlv_encode(board_buffer, strlen(board_buffer), &tlv_size);
         free(board_buffer);
@@ -202,7 +187,6 @@ void play_game(int client1_fd, int client2_fd) {
         }
         free(encoded_data);
 
-        // Receiving board from the second client
         bytes_received = recv(client2_fd, buffer, BUFFER_SIZE, 0);
         if (bytes_received < 0) {
             perror("recv failed");
@@ -224,7 +208,7 @@ void play_game(int client1_fd, int client2_fd) {
     free(buffer);
 }
 
-
+// Wybieranie kolorwu
 void choose_players_pawns(int client1_fd, int client2_fd){
     // Losowanie ktory z graczy gra X a ktory O
     srand(time(NULL));
@@ -259,6 +243,7 @@ int main() {
         exit(EXIT_FAILURE);
     }
 
+    log_message("Socket created");
     int optval = 1;
     setsockopt(server_fd, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(optval));
 
@@ -267,19 +252,21 @@ int main() {
     server_addr.sin_family = AF_INET;
     server_addr.sin_addr.s_addr = inet_addr(SERVER_IP);
     server_addr.sin_port = htons(PORT);
-
+    
+    log_message("The IP address was found and set the socket option");
     if (bind(server_fd, (struct sockaddr *)&server_addr, sizeof(server_addr)) < 0) {
         error("Bind failed");
         close(server_fd);
         exit(EXIT_FAILURE);
     }
 
+    log_message("Address binded");
     if (listen(server_fd, MAX_CLIENTS) < 0) {
         error("Listen failed");
         close(server_fd);
         exit(EXIT_FAILURE);
     }
-
+    
     char server_str[] = "Server listening on port "; 
     log_message(server_str);
 
@@ -301,6 +288,7 @@ int main() {
 
     play_game(client1_fd, client2_fd);
 
+    log_message("Game ended");
     close(server_fd);
     return 0;
 }
